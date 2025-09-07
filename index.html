@@ -1,210 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vaidehi Gupta | Portfolio</title>
+  <!-- Load React and ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Load Tailwind CSS from CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Babel for JSX support in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* Use a fluid height for the main container */
+    #root, body, html {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body class="bg-black text-white font-sans antialiased">
+  <div id="root"></div>
 
-    <title>Hello!</title>
+  <!-- All React code is placed inside this script tag -->
+  <script type="text/jsx">
+    // Helper function to create SVG icons. Note: React.createElement is used here
+    // as it is the most reliable method in a single-file, no-build setup.
+    const icons = {
+      Mail: (props) => (
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-mail">
+          <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+      ),
+      Linkedin: (props) => (
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-linkedin">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" />
+        </svg>
+      ),
+      Github: (props) => (
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-github">
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-0.4 6.7-1.6 6.7-7A5 5 0 0 0 19 8.5c0-1-0.5-2-1.2-3.5c0 0-1-0.3-2.5 0.9A9 9 0 0 0 12 6.5C10.6 6.5 9.3 6.7 8 7.3c-1.5-1.2-2.5-0.9-2.5-0.9C4.5 6.5 4 7.5 4 8.5A5 5 0 0 0 5.8 12c0 5.4 3.4 6.6 6.7 7c-0.2 0.2-0.3 0.6-0.3 1v3" /><path d="M9 18c-2.3 0-2.8-1.5-2.8-1.5" />
+        </svg>
+      ),
+    };
 
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css" />
+    // Placeholder data for sections
+    const aboutMeData = {
+      name: "Vaidehi Gupta",
+      title: "AI & HCI Specialist",
+      bio: "A Computer Science student at Georgia Institute of Technology specializing in Artificial Intelligence and Human-Computer Interaction. I am passionate about creating clean, efficient, and user-friendly solutions that solve real-world problems. My experience includes developing ML models, building web applications, and teaching coding.",
+      image: "https://placehold.co/250x250/5B21B6/F0ABFC?text=VG",
+    };
 
-    <!-- import the webpage's javascript file -->
-    <script src="/script.js" defer></script>
-  </head>
-  <body>
-    <h1 id="header">
-      <h1>What element will you bend?</h1>
-      <h2 id="headtertwo">
-        <h2>Choose your fighting strategy!</h2>
-        <div class="question"></div>
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Foffense.png?v=1607314352904"
-          />
-          <br />
-          <button id="q1a1">
-            Offensive: Attack head-on and keep going til they fall.
-          </button>
-        </div>
+    const educationData = {
+      school: "Georgia Institute of Technology (GT)",
+      degree: "B.S. in Computer Science",
+      specializations: "Specializations: Artificial Intelligence, Human Computer Interaction",
+      location: "Atlanta, GA",
+      relevantCoursework: [
+        "Data Structures & Algorithms", "Objects and Design", "Design & Analysis of Algorithms",
+        "Introduction to Artificial Intelligence", "Intro to Perception & Robotics", "Statistics & Applications"
+      ]
+    };
 
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fdefense.png?v=1607314629433"
-          />
-          <br />
-          <button id="q1a2">
-            Defense: Keep dodging until they get tired.
-          </button>
-        </div>
+    const experienceData = [
+      {
+        company: "Blue AI Labs",
+        title: "Machine Learning Consultant",
+        dates: "Jul 2025 - Present",
+        description: [
+          "Researched and proposed advanced AI features to improve call note app's feedback loop for learning and user engagement.",
+          "Ensured model reproducibility and code quality through meticulous documentation and version control (Git).",
+        ],
+      },
+      {
+        company: "HIVE at GT College of Computing",
+        title: "PLUS Session Leader",
+        dates: "Aug 2025 - Present",
+        description: [
+          "Facilitated Peer-Led Undergraduate Study (PLUS) sessions, guiding students through challenging CS 1332 and CS 3600 concepts.",
+          "Created engaging content and session plans to simplify complex concepts and enhance student comprehension.",
+        ],
+      },
+      {
+        company: "theCoderSchool",
+        title: "Code Coach",
+        dates: "Mar 2023 - Jul 2024",
+        description: [
+          "Taught 10+ kids coding with Python, robotics, 3D printing, and game development tools, increasing student retention.",
+        ],
+      },
+    ];
 
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fu-turn.jpg?v=1607314896794"
-          />
-          <br />
-          <button id="q1a3">
-            Redirect their own energy against them.
-          </button>
-        </div>
+    const projectsData = [
+      {
+        title: "VR State Analysis",
+        description: "Built ML models to predict identity and heart rate and trained them with multimodal VR headset data for health AI research.",
+        link: "https://github.com/vidhigupta413",
+      },
+      {
+        title: "MemoryMap",
+        description: "Implemented login system, chatbot API integration, role-based memory logic, and UI styling for a team-built Django web app.",
+        link: "https://github.com/vidhigupta413",
+      },
+      {
+        title: "RoboInvesting Platform",
+        description: "Developed a robo-advising web app with modular architecture and clean UI on Streamlit and planned API integration for financial data.",
+        link: "https://github.com/vidhigupta413",
+      },
+      {
+        title: "E-Mote Learning",
+        description: "Implemented facial emotion detection with DeepFace and OpenCV in a Jupyter notebook ML model.",
+        link: "https://github.com/vidhigupta413",
+      },
+      {
+        title: "Classical Music Emotion Detection",
+        description: "Utilized K-means clustering in Python to develop an unsupervised ML model that categorized classical music scores by emotion.",
+        link: "https://github.com/vidhigupta413",
+      },
+    ];
 
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Flisten.png?v=1607315280510"
-          />
-          <br />
-          <button id="q1a4">
-            Predict their path and attack when it's time.
-          </button>
-        </div>
+    const hobbiesData = [
+      "AI + ML Medical Research",
+      "Bollywood Dance",
+      "Virtual Reality",
+      "Flute",
+      "Classical Music",
+      "Gaming"
+    ];
 
-        <h2>
-          What beach activity would you do?
-        </h2>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fvolleyball.jpg?v=1607398756380"
-          />
-          <br />
-          <button id="q2a1">
-            Play a fun game of volleyball!!
-          </button>
+    const Contact = () => {
+      return (
+        <section id="contact" className="py-20 px-4 md:px-8 bg-black text-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-purple-600">Get in Touch</h2>
+            <p className="text-lg mb-8 text-gray-400">
+              I'm currently seeking new opportunities. Whether you have a question or just want to say hi, feel free to reach out.
+            </p>
+            <div className="flex justify-center space-x-6">
+              <a href="mailto:vgupta409@gatech.edu" className="hover:text-purple-600 transition-colors">
+                <icons.Mail className="w-8 h-8 md:w-10 md:h-10" />
+              </a>
+              <a href="https://linkedin.com/in/vaidehi-gupta-89107a228" target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition-colors">
+                <icons.Linkedin className="w-8 h-8 md:w-10 md:h-10" />
+              </a>
+              <a href="https://github.com/vidhigupta413" target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition-colors">
+                <icons.Github className="w-8 h-8 md:w-10 md:h-10" />
+              </a>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const Footer = () => (
+      <footer className="bg-gray-900 text-center text-gray-500 py-4 text-sm">
+        <p>
+          &copy; {new Date().getFullYear()} {aboutMeData.name}. All rights reserved.
+        </p>
+      </footer>
+    );
+
+    const App = () => {
+      return (
+        <div className="bg-black text-white font-sans antialiased">
+          {/* Header/Hero Section */}
+          <header className="flex items-center justify-between p-4 md:p-8 bg-gray-900 shadow-lg">
+            <div className="text-2xl font-bold text-purple-600">
+              {aboutMeData.name}
+            </div>
+            <nav className="space-x-4 md:space-x-8">
+              <a href="#about" className="text-gray-400 hover:text-purple-600 transition-colors font-medium">About</a>
+              <a href="#education" className="text-gray-400 hover:text-purple-600 transition-colors font-medium">Education</a>
+              <a href="#experience" className="text-gray-400 hover:text-purple-600 transition-colors font-medium">Experience</a>
+              <a href="#projects" className="text-gray-400 hover:text-purple-600 transition-colors font-medium">Projects</a>
+              <a href="#hobbies" className="text-gray-400 hover:text-purple-600 transition-colors font-medium">Hobbies</a>
+              <a href="#contact" className="text-gray-400 hover:text-purple-600 transition-colors font-medium">Contact</a>
+            </nav>
+          </header>
+
+          {/* Hero */}
+          <section className="h-screen flex items-center justify-center text-center bg-cover bg-center"
+            style={{ backgroundImage: `url('https://placehold.co/1920x1080/000000/9333ea?text=Portfolio')` }}>
+            <div className="bg-black bg-opacity-60 p-8 rounded-lg">
+              <h1 className="text-4xl md:text-6xl font-extrabold text-white">
+                {aboutMeData.name}
+              </h1>
+              <p className="text-lg md:text-xl text-gray-400 mt-2">
+                {aboutMeData.title}
+              </p>
+            </div>
+          </section>
+
+          {/* About Section */}
+          <section id="about" className="py-20 px-4 md:px-8 bg-gray-900">
+            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
+              <img
+                src={aboutMeData.image}
+                alt="Profile"
+                className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border-4 border-purple-600"
+              />
+              <div className="text-center md:text-left">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-purple-600">About Me</h2>
+                <p className="text-gray-400 leading-relaxed">
+                  {aboutMeData.bio}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Education Section */}
+          <section id="education" className="py-20 px-4 md:px-8 bg-black">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-600">Education</h2>
+              <div className="bg-gray-900 p-8 rounded-lg shadow-xl hover:shadow-2xl transition-shadow">
+                <h3 className="text-2xl font-semibold text-purple-600">{educationData.degree}</h3>
+                <p className="text-lg text-gray-400">{educationData.school}</p>
+                <p className="text-md text-gray-500 mb-4">{educationData.specializations}</p>
+                <h4 className="text-lg font-semibold text-gray-400 mt-4">Relevant Coursework:</h4>
+                <ul className="list-disc list-inside text-gray-500 space-y-1">
+                  {educationData.relevantCoursework.map((course, index) => (
+                    <li key={index}>{course}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* Experience Section */}
+          <section id="experience" className="py-20 px-4 md:px-8 bg-gray-900">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-600">Experience</h2>
+              <div className="space-y-12">
+                {experienceData.map((job, index) => (
+                  <div key={index} className="bg-black p-8 rounded-lg shadow-xl hover:shadow-2xl transition-shadow">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                      <div>
+                        <h3 className="text-2xl font-semibold text-purple-600">{job.title}</h3>
+                        <p className="text-lg text-gray-400">{job.company}</p>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2 md:mt-0">{job.dates}</p>
+                    </div>
+                    <ul className="list-disc list-inside mt-4 text-gray-500 space-y-2">
+                      {job.description.map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Projects Section */}
+          <section id="projects" className="py-20 px-4 md:px-8 bg-black">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-600">Projects</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {projectsData.map((project, index) => (
+                  <a key={index} href={project.link} target="_blank" rel="noopener noreferrer" className="block">
+                    <div className="bg-gray-900 p-6 rounded-lg shadow-lg h-full flex flex-col justify-between hover:scale-105 transform transition-transform duration-300">
+                      <div>
+                        <h3 className="text-xl font-semibold text-purple-600 mb-2">{project.title}</h3>
+                        <p className="text-gray-400 text-sm mb-4">{project.description}</p>
+                      </div>
+                      <div className="mt-auto">
+                        <span className="inline-flex items-center text-purple-600 font-medium">
+                          View on GitHub
+                          <icons.Github className="ml-2 w-4 h-4" />
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Hobbies Section */}
+          <section id="hobbies" className="py-20 px-4 md:px-8 bg-gray-900">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-600">Hobbies</h2>
+              <ul className="list-disc list-inside text-lg text-gray-400 space-y-2">
+                {hobbiesData.map((hobby, index) => (
+                  <li key={index}>{hobby}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* Contact Section */}
+          <Contact />
+
+          {/* Footer */}
+          <Footer />
         </div>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fsurfing.jpg?v=1607398765560"
-          />
-          <br />
-          <button id="q2a2">
-            Surfing with the waves...^-^
-          </button>
-        </div>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fsplash.jpg?v=1607398774840"
-          />
-          <br />
-          <button id="q2a3">
-            Splash and swim in the water!
-          </button>
-        </div>
-        
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fsandcastle.jpg?v=1607398781704"
-          />
-          <br />
-          <button id="q2a4">
-            Build a strong sandcastle :o
-          </button>
-        </div>
-        
-        <h2>
-           Which season do you vibe with the most?
-        </h2>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fsummer.jpg?v=1607399837952"
-          />
-          <br />
-          <button id="q3a1">
-            Summer :D
-          </button>
-        </div>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Ffall.jpg?v=1607399844818"
-          />
-          <br />
-          <button id="q3a2">
-            Fall :)
-          </button>
-        </div>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fwinter.jpg?v=1607399832319"
-          />
-          <br />
-          <button id="q3a3">
-            Winter :o
-          </button>
-        </div>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fspring.jpg?v=1607399862831"
-          />
-          <br />
-          <button id="q3a4">
-            Spring ;)
-          </button>
-        </div>
-        
-        <h2>
-          What attack would you be the best at?
-        </h2>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fkick.png?v=1607400925946"
-          />
-          <br />
-          <button id="q4a1">
-            Powerful kicks.
-          </button>
-        </div>
-        
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fstick.jpg?v=1607400930635"
-          />
-          <br />
-          <button id="q4a2">
-            Utlizing a special stick.
-          </button>
-        </div>
-        
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Farms.jpg?v=1607400937947"
-          />
-          <br />
-          <button id="q4a3">
-            Getting the maxium potential of your arms.
-          </button>
-        </div>
-        
-        <div class="answer-choice">
-          <img
-            src="https://cdn.glitch.com/6ef99d9d-3127-45af-8ecf-bf31ab0791da%2Fstomp.png?v=1607400947273"
-          />
-          <br />
-          <button id="q4a4">
-            Pushing the power through your stomps.
-          </button>
-        </div>
-        
-        
-        
-        
-        
-        
-        
-        <div class="result">
-          <h2 id="result">Your result is...</h2>
-        </div>
-      </h2>
-    </h1>
-  </body>
+      );
+    };
+
+    // Bootstrap the React application once the DOM is ready
+    window.onload = function() {
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+    }
+  </script>
+</body>
 </html>
-
