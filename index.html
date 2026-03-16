@@ -48,20 +48,73 @@
       school: "Georgia Institute of Technology (GT)",
       degree: "B.S. in Computer Science",
       specializations: "Specializations: Artificial Intelligence, Human Computer Interaction",
-      relevantCoursework: ["Data Structures & Algorithms", "Objects and Design", "Design & Analysis of Algorithms", "Introduction to Artificial Intelligence", "Intro to Perception & Robotics", "Statistics & Applications"]
+      relevantCoursework: [
+        "Data Structures & Algorithms", "Objects and Design", "Design & Analysis of Algorithms", 
+        "Introduction to Artificial Intelligence", "Intro to Perception & Robotics", "Statistics & Applications",
+        "Computer Organization & Programming", "Machine Learning", "UI Design", "Research Methods", "Cognitive Science"
+      ]
     };
 
     const experienceData = [
-      { company: "Blue AI Labs", title: "Machine Learning Consultant", dates: "Jul 2025 - Present", description: ["Researched and proposed advanced AI features to improve call note app's feedback loop.", "Ensured model reproducibility and code quality through meticulous documentation."] },
-      { company: "HIVE at GT College of Computing", title: "PLUS Session Leader", dates: "Aug 2025 - Present", description: ["Facilitated Peer-Led Undergraduate Study (PLUS) sessions for CS 1332 and CS 3600.", "Created engaging content and session plans to simplify complex concepts."] },
-      { company: "theCoderSchool", title: "Code Coach", dates: "Mar 2023 - Jul 2024", description: ["Taught 10+ kids coding with Python, robotics, 3D printing, and game development."] }
+      { 
+        company: "Responsible AI for Medical Image Analysis (VIP)", 
+        title: "Undergraduate Researcher", 
+        dates: "Aug 2025 - Present", 
+        description: [
+          "Engineered high-performing PyTorch classifier with EfficientNet-B1 on 30k+ images[cite: 13].",
+          "Optimized reliability by conducting systematic failure mode analysis with AUC-ROC/F1-score metrics[cite: 14].",
+          "Collaborated in an Agile development environment to align outputs with medical reliability standards[cite: 15]."
+        ] 
+      },
+      { 
+        company: "HIVE at GT College of Computing", 
+        title: "HELP Session Leader & Peer Coach", 
+        dates: "Aug 2025 - Present", 
+        description: [
+          "Instructed technical workshops for CS 1332/3600, clarifying complex DSA and AI concepts[cite: 21].",
+          "Leading a structured student success initiative, performing weekly progress analytics in Excel[cite: 22].",
+          "Delivering 1-on-1 data-driven coaching sessions to support academic success[cite: 22]."
+        ] 
+      },
+      { 
+        company: "Blue AI Labs", 
+        title: "Machine Learning Consultant", 
+        dates: "Jul 2025 - Aug 2025", 
+        description: [
+          "Developed technical implementation roadmap for 9 AI-driven features[cite: 18].",
+          "Translated complex theoretical models into granular technical specifications for software integration[cite: 19]."
+        ] 
+      }
     ];
 
-    const projectsData = [
-      { title: "Sentra: Full-Stack Multi-Modal AI App", description: "Multi-modal AI application integrating CV, NLP, and speech synthesis.", link: "https://github.gatech.edu/tparida3/Sentra.git" },
-      { title: "VR State Analysis", description: "ML models to predict identity and heart rate using VR data.", link: "https://docs.google.com/presentation/d/11tZQ2ZXOaQ41iqt3E1742TsErcq7jBCISkzSLTtwXX4/edit?usp=sharing" },
-      { title: "MemoryMap", description: "Django web app with chatbot integration and role-based logic.", link: "https://github.com/yashilaramesh/MemoryMap" }
+    const skillsData = [
+      { category: "Languages", items: ["Python", "Java", "SQL", "C", "JavaScript", "HTML/CSS"] },
+      { category: "AI/ML Frameworks", items: ["PyTorch", "TensorFlow", "Keras", "Scikit-learn", "Pandas", "NumPy", "OpenCV", "DeepFace"] },
+      { category: "Tools & Web", items: ["React", "Next.js", "Django", "Flask", "Git", "SQLite", "Jira", "Streamlit", "Jupyter"] },
+      { category: "Product & Strategy", items: ["Agile/Scrum", "User Stories", "Product Roadmapping", "Stakeholder Management"] }
     ];
+
+    const SkillsSection = () => (
+      <section id="skills" className="py-24 px-4 bg-gray-900/50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center text-purple-600">Technical Skills</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            {skillsData.map((skill, i) => (
+              <div key={i} className="bg-black/40 p-6 rounded-xl border border-white/5">
+                <h3 className="text-lg font-bold text-purple-400 mb-4">{skill.category}</h3>
+                <div className="flex flex-wrap gap-2">
+                  {skill.items.map((item, j) => (
+                    <span key={j} className="bg-gray-800 text-gray-300 px-3 py-1 rounded-full text-xs font-medium border border-white/5">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
 
     const DevpostSection = () => (
       <section id="devpost" className="py-12 px-4 md:px-8 bg-black">
@@ -70,7 +123,7 @@
             <div className="text-center md:text-left">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Hackathon Portfolio</h2>
               <p className="text-blue-100/80 max-w-md">
-                Check out my full collection of hackathon projects, submissions, and awards on Devpost.
+                Check out my full collection of hackathon projects and submissions on Devpost.
               </p>
             </div>
             <a 
@@ -87,28 +140,16 @@
       </section>
     );
 
-    const Contact = () => (
-      <section id="contact" className="py-20 px-4 md:px-8 bg-black">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4 text-purple-600">Get in Touch</h2>
-          <div className="flex justify-center space-x-8 mt-8">
-            <a href="mailto:vgupta409@gatech.edu" className="hover:text-purple-600 transition-colors"><icons.Mail className="w-10 h-10" /></a>
-            <a href="https://linkedin.com/in/vaidehi-gupta-89107a228" target="_blank" className="hover:text-purple-600 transition-colors"><icons.Linkedin className="w-10 h-10" /></a>
-            <a href="https://github.com/vidhigupta413" target="_blank" className="hover:text-purple-600 transition-colors"><icons.Github className="w-10 h-10" /></a>
-          </div>
-        </div>
-      </section>
-    );
-
     const App = () => (
       <div className="bg-black text-white">
         <header className="fixed w-full z-50 flex items-center justify-between p-4 md:px-12 bg-black/80 backdrop-blur-md border-b border-white/5">
           <div className="text-xl font-bold text-purple-600">{aboutMeData.name}</div>
           <nav className="hidden md:flex space-x-8 text-sm font-medium text-gray-400">
             <a href="#about" className="hover:text-white transition-colors">About</a>
+            <a href="#education" className="hover:text-white transition-colors">Education</a>
+            <a href="#skills" className="hover:text-white transition-colors">Skills</a>
             <a href="#experience" className="hover:text-white transition-colors">Experience</a>
             <a href="#projects" className="hover:text-white transition-colors">Projects</a>
-            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
           </nav>
         </header>
 
@@ -129,9 +170,28 @@
           </div>
         </section>
 
+        <section id="education" className="py-24 px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-12 text-center text-purple-600">Education</h2>
+            <div className="bg-gray-900/40 p-8 rounded-xl border border-white/5">
+                <h3 className="text-2xl font-bold text-white mb-2">{educationData.school}</h3>
+                <p className="text-purple-400 font-medium mb-4">{educationData.degree} (Expected 05/27) [cite: 6]</p>
+                <p className="text-gray-400 text-sm mb-6 italic">{educationData.specializations} [cite: 5]</p>
+                <h4 className="text-gray-200 font-bold mb-3">Recent & Relevant Coursework[cite: 7, 8]:</h4>
+                <div className="flex flex-wrap gap-2">
+                    {educationData.relevantCoursework.map((course, i) => (
+                        <span key={i} className="text-xs bg-purple-900/30 text-purple-300 px-3 py-1 rounded-md border border-purple-500/20">{course}</span>
+                    ))}
+                </div>
+            </div>
+          </div>
+        </section>
+
+        <SkillsSection />
+
         <section id="experience" className="py-24 px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-12 text-center">Experience</h2>
+            <h2 className="text-3xl font-bold mb-12 text-center text-purple-600">Experience</h2>
             <div className="space-y-8">
               {experienceData.map((job, i) => (
                 <div key={i} className="bg-gray-900/40 p-8 rounded-xl border border-white/5">
@@ -152,27 +212,9 @@
         </section>
 
         <DevpostSection />
-
-        <section id="projects" className="py-24 px-4 bg-gray-900/30">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-12 text-center">Featured Projects</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {projectsData.map((project, i) => (
-                <a key={i} href={project.link} className="group bg-gray-900 p-8 rounded-xl border border-white/5 hover:border-purple-500/50 transition-all">
-                  <h3 className="text-lg font-bold mb-2 group-hover:text-purple-400">{project.title}</h3>
-                  <p className="text-gray-400 text-sm mb-6">{project.description}</p>
-                  <div className="flex items-center text-xs font-bold text-purple-500 uppercase tracking-wider">
-                    View Project <icons.ExternalLink className="ml-2 w-3 h-3" />
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <Contact />
-        <footer className="py-8 text-center text-gray-600 text-sm border-t border-white/5">
-          &copy; {new Date().getFullYear()} {aboutMeData.name}
+        
+        <footer className="py-8 text-center text-gray-600 text-sm border-t border-white/5 bg-black">
+          &copy; {new Date().getFullYear()} {aboutMeData.name} | Built for Georgia Tech CS
         </footer>
       </div>
     );
