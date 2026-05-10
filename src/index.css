@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background: #07050b;
+  color: #f5f0ff;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hide R3F canvas focus outline */
+canvas {
+  outline: none;
+}
+
+@layer components {
+  /* Glassmorphism card used by all overlay panels. */
+  .glass-card {
+    @apply rounded-3xl border border-cafe-neon-purple/40 bg-[#100a1a]/75 backdrop-blur-md shadow-glow-purple;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(180, 117, 255, 0.18), transparent 55%),
+      radial-gradient(circle at 80% 90%, rgba(255, 123, 224, 0.12), transparent 60%);
+  }
+
+  .glass-chip {
+    @apply rounded-full border border-cafe-neon-purple/40 bg-cafe-neon-purple/10 px-3 py-1 text-[11px] font-medium tracking-wide text-cafe-neon-glow backdrop-blur;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 12px rgba(180, 117, 255, 0.7), 0 0 24px rgba(180, 117, 255, 0.35);
+  }
+
+  .neon-divider {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(180, 117, 255, 0.65),
+      transparent
+    );
+    height: 1px;
+  }
+}
+
+/* Subtle starfield/noise to add depth behind the canvas. */
+.cafe-backdrop {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(91, 58, 130, 0.35), transparent 60%),
+    radial-gradient(circle at 85% 80%, rgba(255, 123, 224, 0.18), transparent 55%),
+    linear-gradient(180deg, #050309 0%, #0c0716 60%, #07050b 100%);
+}
+
+/* Custom scrollbar inside overlay panels. */
+.glass-card ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.glass-card ::-webkit-scrollbar-thumb {
+  background: rgba(180, 117, 255, 0.45);
+  border-radius: 999px;
+}
+
+.glass-card ::-webkit-scrollbar-track {
+  background: transparent;
+}
