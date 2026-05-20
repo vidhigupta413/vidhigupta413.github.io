@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 
 import CafeScene from './components/Cafe/CafeScene.jsx';
+import CameraVantageRig from './components/Cafe/CameraVantageRig.jsx';
 import HeroTitle from './components/UI/HeroTitle.jsx';
 import NavChalkboard from './components/UI/NavChalkboard.jsx';
 import OverlayRouter from './components/UI/OverlayRouter.jsx';
 import FooterStrip from './components/UI/FooterStrip.jsx';
+import BackToOverview from './components/UI/BackToOverview.jsx';
+import GlobalMusicPlayer from './components/UI/GlobalMusicPlayer.jsx';
+import MusicHudButton from './components/UI/MusicHudButton.jsx';
 
 // Vidhi's Cafe — the entire site lives inside one isometric scene.
 // Two layers stack here:
 //   1. <Canvas> — the 3D coffee shop with clickable zones.
 //   2. HTML overlays — the navigation, hero title, and per-zone glassmorphism panels.
 export default function App() {
+  const controlsRef = useRef(null);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden cafe-backdrop">
       <Canvas
@@ -35,6 +41,7 @@ export default function App() {
         {/* Free-roam-ish camera so the user can sweep into corners.
             Generous zoom range + near-full rotation; mild pan keeps the target reachable. */}
         <OrbitControls
+          ref={controlsRef}
           enablePan
           panSpeed={0.6}
           screenSpacePanning
@@ -48,13 +55,17 @@ export default function App() {
           maxAzimuthAngle={Math.PI * 0.85}
           target={[0, 3, 1]}
         />
+        <CameraVantageRig controlsRef={controlsRef} />
       </Canvas>
 
       {/* HTML overlay layer */}
+      <GlobalMusicPlayer />
       <HeroTitle />
       <NavChalkboard />
+      <MusicHudButton />
       <OverlayRouter />
       <FooterStrip />
+      <BackToOverview />
     </div>
   );
 }

@@ -12,6 +12,8 @@ import PerformancesPanel from './panels/PerformancesPanel.jsx';
 import RecipesPanel from './panels/RecipesPanel.jsx';
 import ContactPanel from './panels/ContactPanel.jsx';
 import CoffeeChatPanel from './panels/CoffeeChatPanel.jsx';
+import WoodwindsPanel from './panels/WoodwindsPanel.jsx';
+import PianoMusicPanel from './panels/PianoMusicPanel.jsx';
 
 const PANELS = {
   about: AboutPanel,
@@ -25,6 +27,8 @@ const PANELS = {
   recipes: RecipesPanel,
   contact: ContactPanel,
   coffeeChat: CoffeeChatPanel,
+  woodwindsDisplay: WoodwindsPanel,
+  pianoMusic: PianoMusicPanel,
 };
 
 export default function OverlayRouter() {

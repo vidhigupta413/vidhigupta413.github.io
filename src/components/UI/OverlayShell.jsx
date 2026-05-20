@@ -4,7 +4,7 @@ import { useCafeStore } from '../../hooks/useCafeStore.js';
 
 // The shared chrome around every zone's content: backdrop, glass card, header,
 // close button, and ESC handling. Children render inside the scrollable body.
-export default function OverlayShell({ title, subtitle, accent, children }) {
+export default function OverlayShell({ title, subtitle, accent, children, maxWidthClass = 'max-w-3xl' }) {
   const closeZone = useCafeStore((s) => s.closeZone);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function OverlayShell({ title, subtitle, accent, children }) {
 
       {/* Card */}
       <div
-        className="glass-card pointer-events-auto relative z-10 flex max-h-[82vh] w-full max-w-3xl flex-col overflow-hidden"
+        className={`glass-card pointer-events-auto relative z-10 flex max-h-[82vh] w-full ${maxWidthClass} flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top accent bar */}

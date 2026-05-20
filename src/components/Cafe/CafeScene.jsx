@@ -14,6 +14,7 @@ import MusicCorner from './zones/MusicCorner.jsx';
 import ExperienceTable from './zones/ExperienceTable.jsx';
 import AwardsCase from './zones/AwardsCase.jsx';
 import CharactersGroup from './Characters/CharactersGroup.jsx';
+import FloorHotspots from './FloorHotspots.jsx';
 
 export default function CafeScene() {
   return (
@@ -60,6 +61,11 @@ export default function CafeScene() {
 
       {/* Animated population (Vidhi + baristas + walkers + seated tables) */}
       <CharactersGroup />
+
+      {/* Clickable floor rings — pulse softly at each vantage's approach
+          point. Tapping one eases the camera into that view (see
+          CameraVantageRig). Replaces the old "Views" tab. */}
+      <FloorHotspots />
 
       {/* HDR loads from the network and suspends — keep it isolated so the cafe
           mounts immediately even on slow connections. */}

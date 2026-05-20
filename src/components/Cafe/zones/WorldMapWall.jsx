@@ -1,12 +1,13 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import InteractiveZone from '../InteractiveZone.jsx';
-import { travelPins, travelImageExts } from '../../../data/portfolio.js';
+import { travelPlaces, travelImageExts } from '../../../data/portfolio.js';
 import { ROOM } from '../RoomShell.jsx';
 import useFirstAvailableTexture from '../../../hooks/useFirstAvailableTexture.js';
+import { useCafeStore } from '../../../hooks/useCafeStore.js';
 
 // Scrolling polaroids strictly on the BACK WALL *right* half (world x ≥ 0).
 // A world-space clipping plane at x = 0 removes any geometry that drifts into
@@ -20,23 +21,54 @@ const SCROLL_SPEED = 0.48;
 /** Clips away everything with world-space x < 0 (keeps only the right half). */
 const CLIP_RIGHT_HALF = () => [new THREE.Plane(new THREE.Vector3(1, 0, 0), 0)];
 
-function Polaroid({ city, country, tilt, accent, hovered, imageBase }) {
+const PHOTO_MAX_W = POLAROID_W * 0.82;
+const PHOTO_MAX_H = POLAROID_W * 0.58;
+
+function Polaroid({ place, tilt, accent, hovered, imageBase }) {
+  const openZone = useCafeStore((s) => s.openZone);
   const clip = useMemo(CLIP_RIGHT_HALF, []);
   const clipProps = { clippingPlanes: clip, clipShadows: false };
   const photoTex = useFirstAvailableTexture(imageBase, travelImageExts);
+  const [photoSize, setPhotoSize] = useState([PHOTO_MAX_W, PHOTO_MAX_H]);
+
+  const openDetail = useCallback(
+    (e) => {
+      e.stopPropagation();
+      openZone('journey', { travelPlaceId: place.id });
+    },
+    [openZone, place.id],
+  );
+
+  useEffect(() => {
+    const img = photoTex?.image;
+    if (!img?.width) {
+      setPhotoSize([PHOTO_MAX_W, PHOTO_MAX_H]);
+      return;
+    }
+    const iw = img.width;
+    const ih = img.height;
+    const ia = iw / ih;
+    const boxa = PHOTO_MAX_W / PHOTO_MAX_H;
+    if (ia > boxa) {
+      setPhotoSize([PHOTO_MAX_W, PHOTO_MAX_W / ia]);
+    } else {
+      setPhotoSize([PHOTO_MAX_H * ia, PHOTO_MAX_H]);
+    }
+  }, [photoTex]);
+
+  const [pw, ph] = photoSize;
 
   return (
     <group rotation={[0, 0, tilt]}>
       {/* White polaroid card */}
-      <mesh>
+      <mesh raycast={() => null}>
         <planeGeometry args={[POLAROID_W, POLAROID_W * 1.12]} />
         <meshBasicMaterial color="#fff7ec" {...clipProps} />
       </mesh>
 
-      {/* Photo frame — uses the loaded texture when available, else the
-          original glowy accent color. */}
-      <mesh position={[0, 0.16, 0.006]}>
-        <planeGeometry args={[POLAROID_W * 0.82, POLAROID_W * 0.58]} />
+      {/* Photo frame — aspect preserved (letterboxed inside max frame). */}
+      <mesh position={[0, 0.16, 0.006]} raycast={() => null}>
+        <planeGeometry args={[pw, ph]} />
         {photoTex ? (
           <meshBasicMaterial
             map={photoTex}
@@ -60,8 +92,9 @@ function Polaroid({ city, country, tilt, accent, hovered, imageBase }) {
         color="#3a2418"
         anchorX="center"
         anchorY="middle"
+        raycast={() => null}
       >
-        {city}
+        {place.name}
       </Text>
       <Text
         position={[0, -0.64, 0.015]}
@@ -69,10 +102,11 @@ function Polaroid({ city, country, tilt, accent, hovered, imageBase }) {
         color="#7b3f1c"
         anchorX="center"
         anchorY="middle"
+        raycast={() => null}
       >
-        {country}
+        {place.country}
       </Text>
-      <mesh position={[POLAROID_W * 0.3, POLAROID_W * 0.48, 0.012]}>
+      <mesh position={[POLAROID_W * 0.3, POLAROID_W * 0.48, 0.012]} raycast={() => null}>
         <circleGeometry args={[0.065, 16]} />
         <meshStandardMaterial
           color="#ff7be0"
@@ -82,22 +116,44 @@ function Polaroid({ city, country, tilt, accent, hovered, imageBase }) {
           {...clipProps}
         />
       </mesh>
+
+      {/* Click target — covers card + captions */}
+      <mesh position={[0, -0.08, 0.11]} onClick={openDetail}>
+        <planeGeometry args={[POLAROID_W * 1.02, POLAROID_W * 1.38]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} {...clipProps} />
+      </mesh>
     </group>
+  );
+}
+
+function JourneyBackdropOpen({ clip }) {
+  const openZone = useCafeStore((s) => s.openZone);
+  return (
+    <mesh
+      position={[0, -0.2, 0.02]}
+      onClick={(e) => {
+        e.stopPropagation();
+        openZone('journey');
+      }}
+    >
+      <planeGeometry args={[ROOM.floorWidth / 2 - 0.6, 6.2]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} clippingPlanes={clip} clipShadows={false} />
+    </mesh>
   );
 }
 
 export default function WorldMapWall() {
   const stripRef = useRef();
   const clip = useMemo(CLIP_RIGHT_HALF, []);
+  const openZone = useCafeStore((s) => s.openZone);
 
-  const items = useMemo(() => travelPins.slice(0, 14), []);
   const accents = ['#5a3a90', '#7b4dd6', '#a677ff', '#ff7be0', '#ffb56a', '#5a7d3a'];
   const tilts = useMemo(
-    () => items.map((_, i) => ((i * 1374) % 9 - 4) * 0.016),
-    [items],
+    () => travelPlaces.map((_, i) => ((i * 1374) % 9 - 4) * 0.016),
+    [],
   );
 
-  const setWidth = items.length * SPACING;
+  const setWidth = travelPlaces.length * SPACING;
 
   useFrame((_, delta) => {
     if (!stripRef.current) return;
@@ -107,22 +163,22 @@ export default function WorldMapWall() {
     }
   });
 
-  // Origin at the centre of the *right* half of the back wall: x = +W/4.
   const cx = ROOM.floorWidth / 4;
 
   return (
     <group position={[cx, 5.15, ROOM.backWallZ + 0.08]}>
-      <InteractiveZone id="journey" hoverScale={1.01}>
+      <InteractiveZone id="journey" hoverScale={1.01} openPanelOnClick={false}>
         {({ hovered }) => (
           <group>
-            {/* Invisible hit surface for the whole right-half travel panel */}
-            <mesh position={[0, -0.2, 0.02]}>
-              <planeGeometry args={[ROOM.floorWidth / 2 - 0.6, 6.2]} />
-              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-            </mesh>
+            <JourneyBackdropOpen clip={clip} />
 
-            {/* Dark backing card so the strip reads as a contained gallery */}
-            <mesh position={[0, -0.35, 0.03]}>
+            <mesh
+              position={[0, -0.35, 0.03]}
+              onClick={(e) => {
+                e.stopPropagation();
+                openZone('journey');
+              }}
+            >
               <planeGeometry args={[ROOM.floorWidth / 2 - 0.8, 4.2]} />
               <meshStandardMaterial
                 color="#120a08"
@@ -167,18 +223,17 @@ export default function WorldMapWall() {
             <group position={[-6.2, -0.15, 0.05]}>
               <group ref={stripRef}>
                 {[0, 1].map((dup) =>
-                  items.map((p, i) => (
+                  travelPlaces.map((p, i) => (
                     <group
                       key={`${dup}-${p.id}`}
-                      position={[(i + dup * items.length) * SPACING, 0, 0]}
+                      position={[(i + dup * travelPlaces.length) * SPACING, 0, 0]}
                     >
                       <Polaroid
-                        city={p.name}
-                        country={p.country}
+                        place={p}
                         tilt={tilts[i]}
                         accent={accents[i % accents.length]}
                         hovered={hovered}
-                        imageBase={p.imageBase}
+                        imageBase={`/travel/${p.wallStem}`}
                       />
                     </group>
                   )),

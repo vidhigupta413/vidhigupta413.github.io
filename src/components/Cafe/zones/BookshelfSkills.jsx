@@ -68,39 +68,42 @@ function StackedBooks({ x, y, z, width, color1, color2 }) {
   );
 }
 
-function AIShelfOrb() {
+// Floating, rotating wireframe orb. Used to mark the Research zone — sits
+// up on the crown moulding of the bookshelf so it's visible from across the
+// cafe.
+function AIShelfOrb({ radius = 0.34 }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const t = clock.elapsedTime;
-    ref.current.position.y = 0.3 + Math.sin(t * 1.4) * 0.04;
+    ref.current.position.y = 0.4 + Math.sin(t * 1.4) * 0.06;
     ref.current.rotation.y = t * 0.45;
   });
   return (
-    <group ref={ref} position={[0, 0.3, 0]}>
+    <group ref={ref} position={[0, 0.4, 0]}>
       <mesh>
-        <sphereGeometry args={[0.22, 24, 24]} />
+        <sphereGeometry args={[radius, 28, 28]} />
         <meshStandardMaterial
           color="#1a0e22"
           emissive="#7b4dd6"
-          emissiveIntensity={0.85}
+          emissiveIntensity={0.9}
           roughness={0.35}
           toneMapped={false}
         />
       </mesh>
-      <mesh scale={1.06}>
-        <sphereGeometry args={[0.22, 16, 16]} />
+      <mesh scale={1.08}>
+        <sphereGeometry args={[radius, 18, 18]} />
         <meshStandardMaterial
           color="#b475ff"
           emissive="#b475ff"
-          emissiveIntensity={1.1}
+          emissiveIntensity={1.2}
           toneMapped={false}
           wireframe
           transparent
           opacity={0.85}
         />
       </mesh>
-      <pointLight intensity={0.55} distance={2.5} color="#b475ff" />
+      <pointLight intensity={0.9} distance={4.5} color="#b475ff" />
     </group>
   );
 }
@@ -170,8 +173,8 @@ export default function BookshelfSkills() {
     stacked.forEach((s) => {
       reserved[s.shelf].push([s.x - s.w / 2 - 0.04, s.x + s.w / 2 + 0.04]);
     });
-    // AI orb on the top-right of shelf 3 → block ~1.4 wide on the right edge.
-    reserved[3].push([usableW / 2 - 1.45, usableW / 2 + 0.1]);
+    // (The Research orb now sits on TOP of the bookshelf, not on shelf 3,
+    // so the top shelf can be packed edge-to-edge with books.)
 
     const isReserved = (shelf, x0, x1) =>
       reserved[shelf].some(([r0, r1]) => !(x1 < r0 || x0 > r1));
@@ -299,21 +302,31 @@ export default function BookshelfSkills() {
         )}
       </InteractiveZone>
 
-      {/* AI Research orb on the TOP-RIGHT of the bookshelf */}
+      {/* Research orb perched on the CROWN MOULDING — visible from across
+          the cafe and clearly clickable to open the Research panel. */}
       <InteractiveZone
         id="aiResearch"
-        position={[W / 2 - 0.7, SHELVES_Y[3] + 0.06, D / 6]}
-        hoverScale={1.06}
+        position={[0, H + 0.18, 0]}
+        hoverScale={1.08}
       >
         {() => (
           <group>
-            <mesh position={[0, 0.04, 0]}>
-              <cylinderGeometry args={[0.3, 0.32, 0.08, 24]} />
-              <meshStandardMaterial color="#3a1f5a" emissive="#7b4dd6" emissiveIntensity={0.4} toneMapped={false} />
+            {/* Pedestal that sits on the crown moulding */}
+            <mesh position={[0, 0.05, 0]} castShadow>
+              <cylinderGeometry args={[0.4, 0.45, 0.1, 28]} />
+              <meshStandardMaterial color="#3a1f5a" emissive="#7b4dd6" emissiveIntensity={0.45} toneMapped={false} />
             </mesh>
-            <AIShelfOrb />
-            <Text position={[0, 0.78, 0]} fontSize={0.09} color="#d6b4ff" anchorX="center" anchorY="middle">
-              AI Research
+            <AIShelfOrb radius={0.34} />
+            <Text
+              position={[0, 1.18, 0]}
+              fontSize={0.22}
+              color="#d6b4ff"
+              outlineWidth={0.012}
+              outlineColor="#0a0612"
+              anchorX="center"
+              anchorY="middle"
+            >
+              Research
             </Text>
           </group>
         )}

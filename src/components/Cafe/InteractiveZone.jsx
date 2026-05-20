@@ -18,6 +18,8 @@ export default function InteractiveZone({
   cursor = 'pointer',
   /** Passed to `openZone(id, zoneOptions)` — e.g. `{ recipeSlug: 'rajma' }` for Recipes. */
   zoneOptions = {},
+  /** If false, clicking the zone shell does not open the panel — use for Journey wall where polaroids/backdrop open with different options. */
+  openPanelOnClick = true,
   children,
 }) {
   const groupRef = useRef();
@@ -54,7 +56,7 @@ export default function InteractiveZone({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        openZone(id, zoneOptions);
+        if (openPanelOnClick) openZone(id, zoneOptions);
       }}
     >
       {typeof children === 'function' ? children({ hovered }) : children}

@@ -159,13 +159,14 @@ function PersonaCharacter({ hovered }) {
           <sphereGeometry args={[0.27, 16, 16]} />
           <meshStandardMaterial color={hair} roughness={1} />
         </mesh>
-        {/* Long flowing side strands */}
-        <mesh position={[-0.24, -0.32, -0.02]} rotation={[0, 0, 0.06]}>
-          <boxGeometry args={[0.13, 0.95, 0.16]} />
+        {/* Short face-framing locks — kept jaw-length so they read as hair
+            tendrils rather than dangling extra arms next to the body. */}
+        <mesh position={[-0.26, -0.08, 0.04]} rotation={[0, 0, 0.06]}>
+          <boxGeometry args={[0.08, 0.38, 0.12]} />
           <meshStandardMaterial color={hair} roughness={1} />
         </mesh>
-        <mesh position={[0.24, -0.32, -0.02]} rotation={[0, 0, -0.06]}>
-          <boxGeometry args={[0.13, 0.95, 0.16]} />
+        <mesh position={[0.26, -0.08, 0.04]} rotation={[0, 0, -0.06]}>
+          <boxGeometry args={[0.08, 0.38, 0.12]} />
           <meshStandardMaterial color={hair} roughness={1} />
         </mesh>
         {/* Long back hair (down past mid-back) */}
@@ -238,7 +239,9 @@ function PersonaCharacter({ hovered }) {
 
       {/* === Waving (right) arm — raised straight up beside her head === */}
       <group position={[0.34, 1.36, 0.06]}>
-        <group ref={waveArmRef}>
+        {/* Initial Z-rotation matches the lerp target so the arm doesn't
+            briefly hang down at the resting pose on first paint. */}
+        <group ref={waveArmRef} rotation={[0, 0, -2.55]}>
           {/* Upper arm */}
           <mesh position={[0, -0.3, 0]} castShadow>
             <capsuleGeometry args={[0.075, 0.55, 4, 10]} />

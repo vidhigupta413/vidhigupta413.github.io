@@ -38,7 +38,7 @@ export default function LeadershipPanel() {
         <div className="grid gap-3 md:grid-cols-2">
           {awards.map((a) => (
             <div
-              key={a.title}
+              key={a.id}
               className="rounded-2xl border border-amber-300/30 bg-black/35 p-4 transition hover:border-amber-300/60"
             >
               <div className="mb-1 flex items-center justify-between">
@@ -46,7 +46,7 @@ export default function LeadershipPanel() {
                   className="text-[10px] uppercase tracking-widest"
                   style={{ color: a.accent }}
                 >
-                  Trophy
+                  Award
                 </span>
                 <span className="text-[10px] uppercase tracking-widest text-white/50">
                   {a.year}
@@ -54,6 +54,9 @@ export default function LeadershipPanel() {
               </div>
               <h4 className="text-base font-semibold text-white">{a.title}</h4>
               <p className="text-xs text-cafe-neon-purple">{a.org}</p>
+              {a.detail ? (
+                <p className="mt-2 text-xs leading-relaxed text-white/65">{a.detail}</p>
+              ) : null}
             </div>
           ))}
         </div>

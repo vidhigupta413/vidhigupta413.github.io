@@ -302,21 +302,30 @@ export default function RoomShell() {
           <planeGeometry args={[5.2, 2.3]} />
           <meshBasicMaterial color="#5a3a26" transparent opacity={0.85} />
         </mesh>
-        {aboutMe.identityChips.map((chip, i) => (
-          <Text
-            key={chip}
-            position={[0, 0.01, -0.85 + i * 0.5]}
-            rotation={[-Math.PI / 2, 0, 0]}
-            fontSize={0.22}
-            color="#ffd6a5"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {chip}
-          </Text>
-        ))}
+        {(() => {
+          const chips = aboutMe.identityChips;
+          // Center the chips along the mat's depth. Spacing shrinks as more
+          // chips are added so the whole stack always fits inside the rug.
+          const usable = 1.85;
+          const stride = chips.length > 1 ? usable / (chips.length - 1) : 0;
+          const start = -usable / 2;
+          return chips.map((chip, i) => (
+            <Text
+              key={chip}
+              position={[0, 0.01, start + i * stride]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              fontSize={chips.length >= 5 ? 0.19 : 0.22}
+              color="#ffd6a5"
+              anchorX="center"
+              anchorY="middle"
+              maxWidth={5}
+            >
+              {chip}
+            </Text>
+          ));
+        })()}
         <Text
-          position={[0, 0.01, 1.05]}
+          position={[0, 0.01, 1.18]}
           rotation={[-Math.PI / 2, 0, 0]}
           fontSize={0.16}
           color="#ffb56a"

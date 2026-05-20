@@ -12,7 +12,7 @@ export default function ExperiencePanel() {
     >
       <ol className="relative space-y-5 border-l border-cafe-neon-purple/30 pl-6">
         {experience.map((job) => (
-          <li key={`${job.company}-${job.dates}`} className="relative">
+          <li key={job.id} className="relative">
             <span className="absolute -left-[31px] top-1 grid h-4 w-4 place-items-center rounded-full border border-cafe-neon-purple/60 bg-cafe-neon-purple/30 shadow-glow-purple">
               <span className="h-1.5 w-1.5 rounded-full bg-cafe-neon-glow" />
             </span>
@@ -23,7 +23,12 @@ export default function ExperiencePanel() {
                   {job.dates}
                 </span>
               </div>
-              <p className="mb-3 text-xs uppercase tracking-wider text-white/55">{job.company}</p>
+              <p className="mb-1 text-xs uppercase tracking-wider text-white/55">{job.company}</p>
+              {job.location ? (
+                <p className="mb-3 text-[11px] leading-snug text-white/45">{job.location}</p>
+              ) : (
+                <div className="mb-2" aria-hidden />
+              )}
               <ul className="space-y-2 text-sm leading-relaxed text-white/80">
                 {job.description.map((d, i) => (
                   <li key={i} className="flex gap-2">

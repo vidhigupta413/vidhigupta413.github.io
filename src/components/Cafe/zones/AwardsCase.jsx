@@ -12,7 +12,7 @@ import { awards, certifications } from '../../../data/portfolio.js';
 //     shelves, one per entry in `certifications`. Clicking the case opens
 //     the Leadership panel where the full list (with credential IDs) lives.
 
-function Trophy({ y, accent, x = 0 }) {
+function Trophy({ y, accent, x = 0, z = 0, scale = 1 }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     if (!ref.current) return;
@@ -21,7 +21,7 @@ function Trophy({ y, accent, x = 0 }) {
     ref.current.rotation.y = t * 0.6;
   });
   return (
-    <group ref={ref} position={[x, y, 0]}>
+    <group ref={ref} position={[x, y, z]} scale={scale}>
       <mesh>
         <cylinderGeometry args={[0.16, 0.1, 0.28, 16]} />
         <meshStandardMaterial color="#ffd591" emissive={accent} emissiveIntensity={0.5} metalness={0.7} roughness={0.3} toneMapped={false} />
@@ -205,47 +205,44 @@ export default function AwardsCase({ position = [6.8, 0, 3.4], rotation = -0.25 
             >
               ── AWARDS ──
             </Text>
-            {awards.map((a, i) => {
-              // Two awards → wider spacing so each trophy + label has room.
-              const stride = awards.length <= 2 ? 0.85 : 0.55;
-              const x = (i - (awards.length - 1) / 2) * stride;
-              return (
-                <group key={a.title} position={[0, 0, 0]}>
-                  <Trophy x={x} y={CASE_MID_Y + 0.7} accent={a.accent} />
-                  <Text
-                    position={[x, CASE_MID_Y + 0.3, 0]}
-                    fontSize={0.07}
-                    color="#fff7ec"
-                    anchorX="center"
-                    anchorY="middle"
-                    maxWidth={0.78}
-                    textAlign="center"
-                  >
-                    {a.title}
-                  </Text>
-                  <Text
-                    position={[x, CASE_MID_Y + 0.16, 0]}
-                    fontSize={0.05}
-                    color="#ffb56a"
-                    anchorX="center"
-                    anchorY="middle"
-                    maxWidth={0.78}
-                    textAlign="center"
-                  >
-                    {a.org}
-                  </Text>
-                  <Text
-                    position={[x, CASE_MID_Y + 0.08, 0]}
-                    fontSize={0.05}
-                    color="#ffd591"
-                    anchorX="center"
-                    anchorY="middle"
-                  >
-                    {a.year}
-                  </Text>
-                </group>
-              );
-            })}
+            {(() => {
+              const cols = 4;
+              const scale = awards.length > 4 ? 0.38 : 0.72;
+              const stride = 0.5;
+              return awards.map((a, i) => {
+                const row = Math.floor(i / cols);
+                const col = i % cols;
+                const inRow = Math.min(cols, awards.length - row * cols);
+                const x = (col - (inRow - 1) / 2) * stride;
+                const y = CASE_MID_Y + 0.28 + row * 0.34;
+                const z = row % 2 === 0 ? 0.1 : -0.12;
+                return (
+                  <group key={a.id}>
+                    <Trophy x={x} y={y} z={z} accent={a.accent} scale={scale} />
+                    <Text
+                      position={[x, y - 0.22, z]}
+                      fontSize={0.045}
+                      color="#fff7ec"
+                      anchorX="center"
+                      anchorY="middle"
+                      maxWidth={0.48}
+                      textAlign="center"
+                    >
+                      {a.title.length > 28 ? `${a.title.slice(0, 27)}…` : a.title}
+                    </Text>
+                    <Text
+                      position={[x, y - 0.34, z]}
+                      fontSize={0.035}
+                      color="#ffb56a"
+                      anchorX="center"
+                      anchorY="middle"
+                    >
+                      {a.year}
+                    </Text>
+                  </group>
+                );
+              });
+            })()}
 
             {/* === BOTTOM HALF — Certifications ===
                 7 certs across 2 staggered rows: 4 in the front row, 3 in
@@ -263,46 +260,29 @@ export default function AwardsCase({ position = [6.8, 0, 3.4], rotation = -0.25 
               ── CERTIFICATIONS ──
             </Text>
             {(() => {
-              const front = certifications.slice(0, 4);
-              const back = certifications.slice(4);
+              const cols = 4;
               const stride = 0.55;
-              return (
-                <>
-                  {/* Step shelf for the back row */}
-                  <mesh position={[0, CASE_BOTTOM_Y + 0.32, -0.3]}>
-                    <boxGeometry args={[W - 0.18, 0.04, 0.55]} />
-                    <meshStandardMaterial color="#5b3a26" roughness={0.85} />
-                  </mesh>
-                  {/* FRONT ROW (4 certs) */}
-                  <group position={[0, CASE_BOTTOM_Y + 0.22, 0.28]}>
-                    {front.map((c, i) => {
-                      const x = (i - (front.length - 1) / 2) * stride;
-                      return (
-                        <CertificateIcon
-                          key={c.title}
-                          x={x}
-                          label={c.short || c.title}
-                          sub={c.issued}
-                        />
-                      );
-                    })}
-                  </group>
-                  {/* BACK ROW (3 certs) */}
-                  <group position={[0, CASE_BOTTOM_Y + 0.36, -0.3]}>
-                    {back.map((c, i) => {
-                      const x = (i - (back.length - 1) / 2) * stride;
-                      return (
-                        <CertificateIcon
-                          key={c.title}
-                          x={x}
-                          label={c.short || c.title}
-                          sub={c.issued}
-                        />
-                      );
-                    })}
-                  </group>
-                </>
-              );
+              const rows = [];
+              for (let i = 0; i < certifications.length; i += cols) {
+                rows.push(certifications.slice(i, i + cols));
+              }
+              const rowYs = [CASE_BOTTOM_Y + 0.22, CASE_BOTTOM_Y + 0.36, CASE_BOTTOM_Y + 0.5];
+              const rowZs = [0.28, -0.15, -0.38];
+              return rows.map((rowCerts, ri) => (
+                <group key={ri} position={[0, rowYs[ri] ?? rowYs[rowYs.length - 1], rowZs[ri] ?? -0.38]}>
+                  {rowCerts.map((c, i) => {
+                    const x = (i - (rowCerts.length - 1) / 2) * stride;
+                    return (
+                      <CertificateIcon
+                        key={c.title + c.issued}
+                        x={x}
+                        label={c.short || c.title}
+                        sub={c.issued}
+                      />
+                    );
+                  })}
+                </group>
+              ));
             })()}
 
             {/* Subtle interior glow */}

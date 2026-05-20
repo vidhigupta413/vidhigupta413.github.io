@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 
+import { publicAssetUrl } from '../utils/publicAssetUrl.js';
+
 // Default candidate extensions — same set the travel polaroids use, so any
 // image file works without re-encoding.
-export const DEFAULT_IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'webp'];
+export const DEFAULT_IMAGE_EXTS = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'webp'];
+
+function resolveTextureUrl(imageBase, ext) {
+  if (!imageBase) return '';
+  if (/^https?:\/\//i.test(imageBase)) return `${imageBase}.${ext}`;
+  const path = imageBase.startsWith('/') ? imageBase.slice(1) : imageBase;
+  return publicAssetUrl(`${path}.${ext}`);
+}
 
 /**
  * Try to load `<imageBase>.jpg`, then `.jpeg`, `.png`, `.webp` (or whatever
@@ -23,7 +32,7 @@ export default function useFirstAvailableTexture(imageBase, exts = DEFAULT_IMAGE
     let i = 0;
     const tryNext = () => {
       if (cancelled || i >= exts.length) return;
-      const url = `${imageBase}.${exts[i]}`;
+      const url = resolveTextureUrl(imageBase, exts[i]);
       i += 1;
       loader.load(
         url,

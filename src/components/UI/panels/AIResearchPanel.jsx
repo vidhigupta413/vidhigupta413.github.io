@@ -8,7 +8,7 @@ export default function AIResearchPanel() {
     <OverlayShell
       title={aiResearch.headline}
       subtitle={`${aiResearch.lab} · ${aiResearch.role}`}
-      accent="03 — AI Research"
+      accent="03 — Research"
     >
       <p className="mb-5 leading-relaxed text-white/85">{aiResearch.summary}</p>
 

@@ -1,46 +1,39 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Html, RoundedBox } from '@react-three/drei';
-import { useLoader } from '@react-three/fiber';
+import React from 'react';
+import { RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
+import InteractiveZone from '../InteractiveZone.jsx';
 import { ROOM } from '../RoomShell.jsx';
 
-// Big grand piano (Steinway-style, lid OPEN and propped up) tucked into the
-// BACK-RIGHT corner of the cafe. Mounted on the piano body — between the
-// keyboard and the open lid — is a flute stand holding the user-supplied
-// silver concert flute photo upright (matching the reference image). Click
-// the piano body or the flute for a small floating note about my musical
-// history.
+// Grand piano in the back-right corner. Click opens the piano music player.
+// Beside it: a glass display case with flute + piccolo on stands — opens woodwinds panel.
 
-function GrandPiano({ onClick, hovered, setHovered }) {
+const glassProps = {
+  color: '#e8f4ff',
+  metalness: 0.05,
+  roughness: 0.12,
+  transmission: 0.92,
+  thickness: 0.18,
+  transparent: true,
+  envMapIntensity: 0.6,
+  clearcoat: 0.35,
+  clearcoatRoughness: 0.2,
+};
+
+function GrandPiano({ hovered }) {
   const pianoBlack = '#0a070a';
   const pianoSheen = '#1a1018';
-  const lidUnderside = '#7a4a1a'; // warm wood interior visible when lid is open
+  const lidUnderside = '#7a4a1a';
   const ivory = '#fdf6ec';
 
   const NUM_WHITE = 18;
   const KEY_AREA_W = 3.0;
   const WHITE_KEY_W = KEY_AREA_W / NUM_WHITE;
   const BLACK_KEY_PATTERN = [1, 1, 0, 1, 1, 1, 0];
-
-  // Open the lid by rotating it back from its hinged edge (z = -0.95 in piano
-  // local coords). ~62° gives the iconic Steinway "propped-open" silhouette.
   const lidOpenAngle = -Math.PI / 2.9;
 
   return (
-    <group
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-        document.body.style.cursor = 'pointer';
-      }}
-      onPointerOut={() => {
-        setHovered(false);
-        document.body.style.cursor = 'auto';
-      }}
-      onClick={onClick}
-    >
-      {/* === LEGS (front + 2 back) === */}
+    <group>
       <mesh position={[0, 0.35, 0.7]} castShadow>
         <cylinderGeometry args={[0.07, 0.1, 0.7, 12]} />
         <meshStandardMaterial color={pianoBlack} roughness={0.5} metalness={0.25} />
@@ -54,7 +47,6 @@ function GrandPiano({ onClick, hovered, setHovered }) {
         <meshStandardMaterial color={pianoBlack} roughness={0.5} metalness={0.25} />
       </mesh>
 
-      {/* === MAIN BODY === */}
       <RoundedBox
         args={[2.9, 0.5, 1.7]}
         radius={0.12}
@@ -72,37 +64,26 @@ function GrandPiano({ onClick, hovered, setHovered }) {
         />
       </RoundedBox>
 
-      {/* === GRAND-PIANO TAIL CURVE === */}
       <mesh position={[1.3, 0.95, -0.1]} rotation={[0, 0, 0]} castShadow>
         <cylinderGeometry args={[0.85, 0.85, 0.5, 28, 1, false, -Math.PI / 2, Math.PI]} />
         <meshStandardMaterial color={pianoBlack} roughness={0.4} metalness={0.4} />
       </mesh>
 
-      {/* === RIM (top frame around the open soundboard cavity) === a thin
-          ring of polished wood that sits on top of the body so the open lid
-          appears to be hinged onto a real grand-piano rim. */}
       <mesh position={[0, 1.205, -0.1]}>
         <boxGeometry args={[2.95, 0.04, 1.75]} />
         <meshStandardMaterial color={pianoBlack} roughness={0.3} metalness={0.6} />
       </mesh>
 
-      {/* === SOUNDBOARD (visible interior wood, replaces the flat top now
-          that the lid is open) === */}
       <mesh position={[0, 1.215, -0.1]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[2.78, 1.55]} />
         <meshStandardMaterial color="#3a2410" roughness={0.85} metalness={0.05} />
       </mesh>
-      {/* Cast-iron golden plate suggestion */}
       <mesh position={[-0.2, 1.219, -0.05]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[1.6, 0.9]} />
         <meshStandardMaterial color="#a87d2a" roughness={0.55} metalness={0.7} />
       </mesh>
 
-      {/* === LID (open, hinged on the back edge z=-0.95) ===
-          The lid group is anchored at the hinge, so rotation.x lifts it up
-          while the front edge (closer to the keyboard) rises into the air. */}
       <group position={[0, 1.24, -0.95]} rotation={[lidOpenAngle, 0, 0]}>
-        {/* Outer (top) lid surface — glossy black */}
         <RoundedBox
           args={[2.95, 0.08, 1.75]}
           radius={0.09}
@@ -112,24 +93,20 @@ function GrandPiano({ onClick, hovered, setHovered }) {
         >
           <meshStandardMaterial color={pianoSheen} roughness={0.22} metalness={0.6} />
         </RoundedBox>
-        {/* Lid curve teardrop (matches body tail) */}
         <mesh position={[1.3, 0.04, 0.875]} castShadow>
           <cylinderGeometry args={[0.88, 0.88, 0.08, 28, 1, false, -Math.PI / 2, Math.PI]} />
           <meshStandardMaterial color={pianoSheen} roughness={0.22} metalness={0.6} />
         </mesh>
-        {/* Underside glow (warm wood you see when the lid is up) */}
         <mesh position={[0, -0.005, 0.875]} rotation={[Math.PI, 0, 0]}>
           <planeGeometry args={[2.78, 1.55]} />
           <meshStandardMaterial color={lidUnderside} roughness={0.85} side={THREE.DoubleSide} />
         </mesh>
-        {/* Highlight stripe along the polished outer edge */}
         <mesh position={[-0.4, 0.085, 1.5]} rotation={[0, 0.06, 0]}>
           <planeGeometry args={[1.5, 0.04]} />
           <meshBasicMaterial color="#ffffff" transparent opacity={0.45} />
         </mesh>
       </group>
 
-      {/* === KEYBOARD === */}
       <group position={[0, 0.78, 0.95]}>
         <mesh castShadow>
           <boxGeometry args={[KEY_AREA_W + 0.16, 0.08, 0.45]} />
@@ -156,19 +133,15 @@ function GrandPiano({ onClick, hovered, setHovered }) {
         })}
       </group>
 
-      {/* === FALLBOARD with Steinway-style logo === in front of the soundboard,
-          right behind the keys, where the player would read sheet music. */}
       <mesh position={[0, 1.0, 0.7]} rotation={[Math.PI / 18, 0, 0]}>
         <boxGeometry args={[2.9, 0.34, 0.04]} />
         <meshStandardMaterial color={pianoBlack} roughness={0.3} metalness={0.6} />
       </mesh>
-      {/* Tiny brand plaque */}
       <mesh position={[0, 1.0, 0.722]} rotation={[Math.PI / 18, 0, 0]}>
         <planeGeometry args={[0.7, 0.06]} />
         <meshBasicMaterial color="#cfa46a" />
       </mesh>
 
-      {/* === BRASS PEDAL CLUSTER === */}
       <group position={[0, 0.05, 0.55]}>
         <mesh>
           <boxGeometry args={[0.32, 0.04, 0.16]} />
@@ -185,221 +158,124 @@ function GrandPiano({ onClick, hovered, setHovered }) {
   );
 }
 
-/**
- * The user supplied a silver concert flute photo (white background, flute
- * oriented horizontally). We render the silhouette UPRIGHT on a small black
- * flute stand sitting on the piano body — exactly like the reference image.
- *
- * Steps:
- *   1. Custom shader discards near-white pixels (so the silver flute reads
- *      cleanly against the dark piano interior).
- *   2. The plane is rotated 90° around Z so the image's wide axis becomes the
- *      vertical axis → flute now stands tall.
- *   3. A small base + thin pole + cradle pegs supports the flute visually.
- */
-function FluteOnStand({ onClick, hovered, setHovered }) {
-  const tex = useLoader(THREE.TextureLoader, '/assets/flute.png');
-
-  useEffect(() => {
-    if (!tex) return;
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = 8;
-  }, [tex]);
-
-  // Source image is wide (flute drawn horizontally). We keep the natural
-  // aspect on the plane and rotate the plane 90° around Z to make the flute
-  // appear vertical without squishing pixels.
-  const { planeW, planeH } = useMemo(() => {
-    if (!tex || !tex.image) return { planeW: 1.6, planeH: 0.4 };
-    const aspect = tex.image.width / tex.image.height;
-    // Visible HEIGHT of the upright flute (after Z-rotation) = planeW.
-    const visibleHeight = 1.45;
-    return { planeW: visibleHeight, planeH: visibleHeight / aspect };
-  }, [tex]);
-
-  const shaderArgs = useMemo(
-    () => ({
-      uniforms: {
-        map: { value: tex },
-        uHover: { value: 0 },
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D map;
-        uniform float uHover;
-        varying vec2 vUv;
-        void main() {
-          vec4 t = texture2D(map, vUv);
-          float lum = (t.r + t.g + t.b) / 3.0;
-          // Soft cutoff: pixels brighter than 0.93 fully transparent.
-          float a = 1.0 - smoothstep(0.83, 0.93, lum);
-          if (a < 0.02) discard;
-          // Boost silver/cool tones; subtle warm tint when hovered.
-          vec3 rgb = mix(t.rgb, t.rgb * vec3(1.05, 0.95, 1.15), uHover);
-          gl_FragColor = vec4(rgb, a);
-        }
-      `,
-      transparent: true,
-      depthWrite: false,
-    }),
-    [tex],
-  );
-
-  // Stand geometry constants
-  const POLE_HEIGHT = 0.55;
-  const BASE_RADIUS = 0.18;
-  const CRADLE_Y = 0.04 + POLE_HEIGHT; // top of the pole
+/** Glass case: tall narrow vitrine; flute + piccolo on stands. */
+function GlassInstrumentCase({ hovered }) {
+  const w = 0.68;
+  const d = 0.34;
+  const h = 1.52;
+  const baseY = 0.06;
+  const floorY = baseY * 2 + 0.01;
+  const silver = '#c8d4e8';
+  const silverDark = '#9aa8bc';
 
   return (
-    <group
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-        document.body.style.cursor = 'pointer';
-      }}
-      onPointerOut={() => {
-        setHovered(false);
-        document.body.style.cursor = 'auto';
-      }}
-      onClick={onClick}
-    >
-      {/* === STAND BASE — small disc with three subtle feet === */}
-      <mesh position={[0, 0.02, 0]} castShadow>
-        <cylinderGeometry args={[BASE_RADIUS, BASE_RADIUS * 1.15, 0.04, 24]} />
-        <meshStandardMaterial color="#0a070a" metalness={0.6} roughness={0.35} />
-      </mesh>
-      {[0, 2.094, 4.188].map((angle, i) => (
-        <mesh
-          key={`foot-${i}`}
-          position={[Math.cos(angle) * BASE_RADIUS * 0.95, 0.015, Math.sin(angle) * BASE_RADIUS * 0.95]}
-        >
-          <cylinderGeometry args={[0.025, 0.03, 0.03, 8]} />
-          <meshStandardMaterial color="#0a070a" metalness={0.6} roughness={0.35} />
-        </mesh>
-      ))}
-
-      {/* === STAND POLE === */}
-      <mesh position={[0, 0.04 + POLE_HEIGHT / 2, 0]} castShadow>
-        <cylinderGeometry args={[0.013, 0.013, POLE_HEIGHT, 12]} />
-        <meshStandardMaterial color="#101010" metalness={0.7} roughness={0.3} />
+    <group>
+      <RoundedBox args={[w + 0.1, baseY * 2, d + 0.08]} radius={0.035} position={[0, baseY, 0]} castShadow>
+        <meshStandardMaterial color="#2a1810" roughness={0.75} metalness={0.15} />
+      </RoundedBox>
+      <mesh position={[0, floorY, 0]}>
+        <boxGeometry args={[w - 0.05, 0.022, d - 0.05]} />
+        <meshStandardMaterial color="#1a0f18" roughness={0.95} />
       </mesh>
 
-      {/* === CRADLE PEGS at the top of the pole === two short angled pegs that
-          hold the body of the flute, plus a small backing block. */}
-      <group position={[0, CRADLE_Y, 0]}>
-        <mesh position={[0, 0.02, 0]}>
-          <boxGeometry args={[0.12, 0.04, 0.05]} />
-          <meshStandardMaterial color="#0a070a" metalness={0.6} roughness={0.35} />
+      <mesh position={[0, floorY + h / 2, -d / 2]} castShadow={false}>
+        <boxGeometry args={[w, h, 0.02]} />
+        <meshPhysicalMaterial {...glassProps} opacity={hovered ? 0.98 : 0.92} />
+      </mesh>
+      <mesh position={[-w / 2, floorY + h / 2, 0]} castShadow={false}>
+        <boxGeometry args={[0.02, h, d]} />
+        <meshPhysicalMaterial {...glassProps} opacity={hovered ? 0.98 : 0.92} />
+      </mesh>
+      <mesh position={[w / 2, floorY + h / 2, 0]} castShadow={false}>
+        <boxGeometry args={[0.02, h, d]} />
+        <meshPhysicalMaterial {...glassProps} opacity={hovered ? 0.98 : 0.92} />
+      </mesh>
+      <mesh position={[0, floorY + h, 0]} castShadow={false}>
+        <boxGeometry args={[w, 0.024, d]} />
+        <meshPhysicalMaterial {...glassProps} opacity={hovered ? 0.98 : 0.92} />
+      </mesh>
+
+      <mesh position={[0, floorY + h + 0.01, 0]}>
+        <boxGeometry args={[w + 0.03, 0.018, d + 0.03]} />
+        <meshStandardMaterial color="#b8955e" metalness={0.8} roughness={0.25} />
+      </mesh>
+
+      <group position={[-0.1, floorY, 0.015]}>
+        <mesh position={[0, 0.016, 0]} castShadow>
+          <cylinderGeometry args={[0.048, 0.054, 0.032, 18]} />
+          <meshStandardMaterial color="#0a0a0c" metalness={0.65} roughness={0.35} />
         </mesh>
-        {/* angled rubber-tipped pegs, cradling the flute */}
-        <mesh position={[-0.07, 0.06, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <cylinderGeometry args={[0.012, 0.012, 0.13, 8]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.4} roughness={0.6} />
+        <mesh position={[0, 0.2, 0]} castShadow>
+          <cylinderGeometry args={[0.01, 0.009, 0.38, 10]} />
+          <meshStandardMaterial color="#1a1a20" metalness={0.5} roughness={0.4} />
         </mesh>
-        <mesh position={[0.07, 0.06, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <cylinderGeometry args={[0.012, 0.012, 0.13, 8]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.4} roughness={0.6} />
+        <mesh position={[0, 0.68, 0.01]} castShadow>
+          <cylinderGeometry args={[0.017, 0.017, 0.88, 16]} />
+          <meshStandardMaterial color={silver} metalness={0.85} roughness={0.22} />
+        </mesh>
+        {[0.24, 0.34, 0.44, 0.54].map((dy, i) => (
+          <mesh key={i} position={[0.019, 0.4 + dy, 0.01]} castShadow>
+            <boxGeometry args={[0.012, 0.036, 0.048]} />
+            <meshStandardMaterial color={silverDark} metalness={0.7} roughness={0.3} />
+          </mesh>
+        ))}
+        <mesh position={[0, 0.2, 0.01]} castShadow>
+          <cylinderGeometry args={[0.019, 0.021, 0.15, 12]} />
+          <meshStandardMaterial color={silver} metalness={0.8} roughness={0.25} />
         </mesh>
       </group>
 
-      {/* === FLUTE PHOTO === rotated 90° around Z so the wide image becomes a
-          tall silhouette. Sits centered on the cradle and rises along Y. */}
-      <group
-        position={[0, CRADLE_Y + planeW / 2 - 0.05, 0.012]}
-        rotation={[0, 0, Math.PI / 2]}
-      >
-        {/* Hit volume (wider than the visible silhouette so it's easy to click) */}
-        <mesh position={[0, 0, -0.002]}>
-          <planeGeometry args={[planeW * 1.05, planeH * 2.4]} />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      <group position={[0.1, floorY, -0.02]}>
+        <mesh position={[0, 0.016, 0]} castShadow>
+          <cylinderGeometry args={[0.036, 0.042, 0.028, 14]} />
+          <meshStandardMaterial color="#0a0a0c" metalness={0.65} roughness={0.35} />
         </mesh>
-        {/* Flute texture */}
-        <mesh>
-          <planeGeometry args={[planeW, planeH]} />
-          <shaderMaterial
-            attach="material"
-            args={[shaderArgs]}
-            uniforms-uHover-value={hovered ? 1 : 0}
-            transparent
-            depthWrite={false}
-          />
+        <mesh position={[0, 0.14, 0]} castShadow>
+          <cylinderGeometry args={[0.008, 0.008, 0.26, 8]} />
+          <meshStandardMaterial color="#1a1a20" metalness={0.5} roughness={0.4} />
+        </mesh>
+        <mesh position={[0, 0.4, 0.008]} castShadow>
+          <cylinderGeometry args={[0.015, 0.015, 0.42, 14]} />
+          <meshStandardMaterial color="#121418" roughness={0.55} metalness={0.2} />
+        </mesh>
+        <mesh position={[0, 0.68, 0.008]} castShadow>
+          <cylinderGeometry args={[0.014, 0.013, 0.16, 12]} />
+          <meshStandardMaterial color={silver} metalness={0.85} roughness={0.2} />
+        </mesh>
+        <mesh position={[0, 0.8, 0.008]} castShadow>
+          <cylinderGeometry args={[0.012, 0.011, 0.09, 10]} />
+          <meshStandardMaterial color={silver} metalness={0.8} roughness={0.22} />
         </mesh>
       </group>
     </group>
   );
 }
 
-// Piano + flute in the BACK-RIGHT corner. Click anywhere on the piano body
-// to show the piano blurb; click the flute for the flute blurb.
 export default function MusicCorner({
   position = [ROOM.rightWallX - 3.5, 0, ROOM.backWallZ + 3.5],
 }) {
-  const [pianoTip, setPianoTip] = useState(false);
-  const [fluteTip, setFluteTip] = useState(false);
-  const [pianoHover, setPianoHover] = useState(false);
-  const [fluteHover, setFluteHover] = useState(false);
-
-  useEffect(() => {
-    if (!pianoTip) return;
-    const t = setTimeout(() => setPianoTip(false), 3500);
-    return () => clearTimeout(t);
-  }, [pianoTip]);
-  useEffect(() => {
-    if (!fluteTip) return;
-    const t = setTimeout(() => setFluteTip(false), 4500);
-    return () => clearTimeout(t);
-  }, [fluteTip]);
-
   return (
     <group position={position} rotation={[0, -Math.PI / 4, 0]}>
-      <GrandPiano
-        hovered={pianoHover}
-        setHovered={setPianoHover}
-        onClick={(e) => {
-          e.stopPropagation();
-          setPianoTip(true);
-          setFluteTip(false);
-        }}
-      />
+      <InteractiveZone id="pianoMusic" hoverScale={1.015}>
+        {({ hovered }) => <GrandPiano hovered={hovered} />}
+      </InteractiveZone>
 
-      {/* Flute on its stand — sits on the soundboard between the keys and the
-          open lid (around z = 0.0 in piano-local coords, slightly off-center
-          on the bass side just like the reference image). The stand's base
-          rests on the rim at y = 1.225. */}
-      <group position={[0.05, 1.225, 0.0]}>
-        <FluteOnStand
-          hovered={fluteHover}
-          setHovered={setFluteHover}
-          onClick={(e) => {
-            e.stopPropagation();
-            setFluteTip(true);
-            setPianoTip(false);
-          }}
-        />
-      </group>
-
-      {/* Tooltip: piano blurb */}
-      {pianoTip && (
-        <Html position={[0, 2.4, 0.4]} center distanceFactor={9}>
-          <div className="pointer-events-none max-w-[240px] rounded-2xl border border-cafe-neon-purple/50 bg-[#100a1a]/92 px-3 py-2 text-xs text-cafe-neon-glow shadow-glow-purple backdrop-blur-md">
-            I've been playing the piano since the 3rd grade!
-          </div>
-        </Html>
-      )}
-      {/* Tooltip: flute blurb */}
-      {fluteTip && (
-        <Html position={[0.7, 2.4, 0.2]} center distanceFactor={9}>
-          <div className="pointer-events-none max-w-[260px] rounded-2xl border border-cafe-neon-purple/50 bg-[#100a1a]/92 px-3 py-2 text-xs text-cafe-neon-glow shadow-glow-purple backdrop-blur-md">
-            I've played the flute for over 7 years! Check out the glass display case to see my awards.
-          </div>
-        </Html>
-      )}
+      <InteractiveZone
+        id="woodwindsDisplay"
+        position={[-2.38, 0, 0.12]}
+        rotation={[0, -0.52, 0]}
+        hoverScale={1.03}
+      >
+        {({ hovered }) => (
+          <group>
+            <mesh position={[0, 0.88, 0.2]}>
+              <boxGeometry args={[0.82, 1.68, 0.48]} />
+              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+            </mesh>
+            <GlassInstrumentCase hovered={hovered} />
+          </group>
+        )}
+      </InteractiveZone>
     </group>
   );
 }

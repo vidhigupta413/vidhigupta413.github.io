@@ -10,13 +10,14 @@ defined in `src/data/portfolio.js → leadership[].imageBase`.
 loading each plaque's image from this folder. The loader tries these
 extensions in order, taking the first one that exists:
 
-1. `.jpg`
-2. `.jpeg`
-3. `.png`
-4. `.webp`
+`jpg`, `jpeg`, `JPG`, `JPEG`, `png`, `webp` (case variants cover files like `data-science-gt.JPEG`).
 
-If no file is found for a slug, the plaque falls back to its painted
-accent-glow color (no errors thrown).
+If no file is found for a slug, the plaque falls back to a glowing card
+with the org name (no errors thrown).
+
+> ⚠️ Keep files small — under ~1 MB each. Multi-megapixel phone photos
+> make the scene hang while textures upload to the GPU. Resize down to
+> ~1600 px wide before adding (`sips -Z 1600 yourphoto.jpg`).
 
 ## Current slugs
 
