@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" fill="none" aria-hidden="true">
+  <defs>
+    <!-- Halftone: navy tiles with white dots (clipped to land) -->
+    <pattern id="landHalftone" patternUnits="userSpaceOnUse" width="7" height="7">
+      <rect width="7" height="7" fill="#1a1a5e"/>
+      <circle cx="3.5" cy="3.5" r="1.15" fill="#ffffff"/>
+    </pattern>
+    <!-- Slight variation for depth -->
+    <pattern id="landHalftone2" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(4)">
+      <rect width="8" height="8" fill="#16165a"/>
+      <circle cx="4" cy="4" r="1.05" fill="#f5f5ff"/>
+    </pattern>
+  </defs>
+  <!-- Light neutral background (reference style) -->
+  <rect width="1000" height="500" fill="#ebebf0"/>
+  <!-- Stylized continents — coordinates tuned for pin overlay in app -->
+  <g opacity="0.98">
+    <ellipse cx="220" cy="210" rx="165" ry="195" fill="url(#landHalftone)" stroke="#c8c8d8" stroke-width="1.2"/>
+    <ellipse cx="500" cy="235" rx="105" ry="155" fill="url(#landHalftone)" stroke="#c8c8d8" stroke-width="1.2"/>
+    <ellipse cx="535" cy="145" rx="130" ry="95" fill="url(#landHalftone2)" stroke="#c8c8d8" stroke-width="1"/>
+    <ellipse cx="755" cy="215" rx="210" ry="175" fill="url(#landHalftone)" stroke="#c8c8d8" stroke-width="1.2"/>
+    <ellipse cx="835" cy="385" rx="75" ry="58" fill="url(#landHalftone2)" stroke="#c8c8d8" stroke-width="1"/>
+    <ellipse cx="280" cy="95" rx="95" ry="72" fill="url(#landHalftone2)" stroke="#c8c8d8" stroke-width="1"/>
+  </g>
+</svg>
